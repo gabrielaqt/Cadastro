@@ -1,38 +1,17 @@
 
+var express = require('express');
+var router = express.Router();
 
-function funcaoLimpa() {
 
-    var resultBotaoLimpar;
-    var opcao = confirm("Deseja Limpar a tela?");
-    if (opcao === true) {
-        document.FormularioCadastro.reset();
-    }
-    else {
-        //Nao Faz nada
-    }
-}
-function salvaCliente() {
-    var form = document.FormularioCadastro;
-    var input = {
-        nome: form.inputName.value,
-        CPF: form.inputCPF.value,
-        email: form.inputEmail4.value,
-        senha: form.inputPassword4.value
-      
-    };
-    $.ajax({
-        url: '/cliente/insere',
-        type: 'post',
-        data: input,
-        error: function (dados) {
-            alert('Erro: ' + dados.data);
-        },
-        success: function (dados) {
-            if (dados.status === 'ERRO'){
-    alert('Erro: ' + dados.data); }
-            else{
-                alert(dados.data);
-                }
-        }
+router.post('/insere', function (req, res, next) {
+    var input = req.body;
+    req.getConnection(function (err, connection) {
+        var query = connection.query("INSERT INTO Cliente SET ? ", input, function (err, rows) {
+            if (err)
+                res.json({ status: 'ERRO', data: + err });
+            else
+                res.json({ status: 'OK', data: 'Incluído com sucesso!' });
+        });
     });
-}
+});
+module.exports = router;
